@@ -1,0 +1,52 @@
+%create report of bad time segments, electrodes and ICs
+preproc_dir = '/projects/b1240/pronet/Pronet_EEG_VJP/preproc/';
+save_dir = '/projects/b1240/pronet/Pronet_EEG_VJP/csvs/';
+
+%have to redo subIDs to only select subIDs that made it through
+%preprocessing
+files = dir([preproc_dir,'*.mat']);
+subIDs = {files.name};
+%subIDs = regexprep(names, '_eyes_(open|closed)_preproc.mat$', '');
+%drop repeats created by removing condition info
+%subIDs = unique(subIDs);
+
+
+%conditions = {'eyes_open','eyes_closed'};
+fields = {'channels_removed','channels_removed_names','occipital_channels', ...
+          'percent_segments_removed','rejected_ics'};
+
+preproc_report = subIDs';
+for j = 1:length(subIDs)
+    subID = subIDs{j};
+        try
+        load([preproc_dir,subID])
+        preproc_report{j,2} = preproc_EEG.channels_removed;
+        preproc_report{j,3} = preproc_EEG.channels_removed_names_nice;
+        preproc_report{j,4} = preproc_EEG.occipital_channels_used;
+        preproc_report{j,5} = preproc_EEG.percent_segments_removed;
+        preproc_report{j,6} = preproc_EEG.rejected_ics;
+        catch
+        preproc_report{j,2} = NaN;
+        preproc_report{j,3} = NaN;
+        preproc_report{j,4} = NaN;
+        preproc_report{j,5} = NaN;
+        preproc_report{j,6} = NaN;
+            continue
+        end
+        disp('done with subject ',num2str(j) )
+end
+
+preproc_report = cell2table(preproc_report);
+preproc_report.Properties.VariableNames = ['subIDs',fields];  % renames columns to A and B
+
+for j =1:length(fields)
+    field = fields{j};
+    if strcmp(field, 'channels_removed_names')
+        continue
+    end
+    figure;
+    histogram([preproc_report.(field)])
+        title(field,'Interpreter','None')
+        set(gcf, 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
+end
+

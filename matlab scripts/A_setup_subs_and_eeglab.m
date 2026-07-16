@@ -1,0 +1,19 @@
+addpath('/projects/b1240/pronet/Pronet_EEG_VJP/')
+eeglab_dir = '/projects/b1240/pronet/Pronet_EEG_VJP/eeglab2024.2/';
+addpath(eeglab_dir)
+eeglab
+
+raw_data_dir = '/projects/b1240/pronet/Pronet_EEG_VJP/Raw EEG Files/';
+files = dir([raw_data_dir,'*visit*']);
+subIDs = {files.name};
+%subIDs = cellfun(@(x) x(1:end-4), names, 'UniformOutput', false);
+conditions = {'eyes_open','eyes_closed'};
+
+
+% just checking how many baseline subjects we had to start with
+raw_data_dir = '/projects/b1240/pronet/Pronet_EEG_VJP/Raw EEG Files/';
+files = dir([raw_data_dir,'*']);
+names = {files.name};
+
+
+conditions = {'eyes_open','eyes_closed'};
